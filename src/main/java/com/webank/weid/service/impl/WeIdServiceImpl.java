@@ -21,7 +21,10 @@ package com.webank.weid.service.impl;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -174,34 +177,7 @@ public class WeIdServiceImpl extends AbstractService implements WeIdService {
             return new ResponseData<>(null, ErrorCode.WEID_INVALID);
         }
         ResponseData<WeIdDocument> weIdDocResp = weIdServiceEngine.getWeIdDocument(weId);
-        if (weIdDocResp.getErrorCode() != ErrorCode.SUCCESS.getCode()) {
-            return weIdDocResp;
-        }
-        return new ResponseData<>(trimObsoleteWeIdDocument(weIdDocResp.getResult()),
-            weIdDocResp.getErrorCode(), weIdDocResp.getErrorMessage());
-    }
-
-    private WeIdDocument trimObsoleteWeIdDocument(WeIdDocument originalDocument) {
-        List<PublicKeyProperty> pubKeysToRemove = new ArrayList<>();
-        List<AuthenticationProperty> authToRemove = new ArrayList<>();
-        for (PublicKeyProperty pr : originalDocument.getPublicKey()) {
-            if (pr.getPublicKey().contains(WeIdConstant.REMOVED_PUBKEY_TAG)) {
-                pubKeysToRemove.add(pr);
-                for (AuthenticationProperty ap : originalDocument.getAuthentication()) {
-                    if (ap.getPublicKey().equalsIgnoreCase(pr.getId())) {
-                        authToRemove.add(ap);
-                    }
-                }
-            }
-        }
-        for (AuthenticationProperty ap : originalDocument.getAuthentication()) {
-            if (ap.getPublicKey().contains(WeIdConstant.REMOVED_AUTHENTICATION_TAG)) {
-                authToRemove.add(ap);
-            }
-        }
-        originalDocument.getPublicKey().removeAll(pubKeysToRemove);
-        originalDocument.getAuthentication().removeAll(authToRemove);
-        return originalDocument;
+        return weIdDocResp;
     }
 
     /**
@@ -263,6 +239,7 @@ public class WeIdServiceImpl extends AbstractService implements WeIdService {
             return new ResponseData<>(false, ErrorCode.WEID_PRIVATEKEY_INVALID);
         }
 
+        // TODO check this weid document that this pubkey MUST exist first
         String weId = setPublicKeyArgs.getWeId();
         ResponseData<WeIdDocument> responseData = this.getWeIdDocument(weId);
         if (responseData.getResult() == null) {

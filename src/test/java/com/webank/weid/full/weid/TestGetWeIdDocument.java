@@ -139,7 +139,7 @@ public class TestGetWeIdDocument extends TestBaseService {
             .setPrivateKey(createWeIdResult.getUserWeIdPrivateKey().getPrivateKey());
         setPublicKeyArgs.setType(PublicKeyType.RSA);
         setPublicKeyArgs.setOwner(createWeIdResult.getWeId());
-        weIdService.setPublicKey(setPublicKeyArgs);
+        weIdService.addPublicKey(setPublicKeyArgs);
         ResponseData<WeIdDocument> weIdDoc = weIdService
             .getWeIdDocument(createWeIdResult.getWeId());
         Assert.assertEquals(weIdDoc.getResult().getPublicKey().size(), 2);
@@ -154,15 +154,16 @@ public class TestGetWeIdDocument extends TestBaseService {
         weIdAuthentication.setWeId(DataToolUtils.convertPrivateKeyToDefaultWeId(privateKey));
         weIdAuthentication.setWeIdPrivateKey(new WeIdPrivateKey());
         weIdAuthentication.getWeIdPrivateKey().setPrivateKey(privateKey);
-        ResponseData<Boolean> resp = weIdService
-            .delegateSetPublicKey(publicKeyArgs, weIdAuthentication);
+        ResponseData<Integer> resp = weIdService
+            .delegateAddPublicKey(publicKeyArgs, weIdAuthentication);
         weIdDoc = weIdService.getWeIdDocument(createWeIdResult.getWeId());
         Assert.assertEquals(weIdDoc.getResult().getPublicKey().size(), 3);
         weIdAuthentication = new WeIdAuthentication();
         weIdAuthentication.setWeId(createWeIdResult.getWeId());
         weIdAuthentication.setWeIdPrivateKey(createWeIdResult.getUserWeIdPrivateKey());
-        ResponseData<Boolean> resp2 = weIdService
-            .delegateSetPublicKey(publicKeyArgs, weIdAuthentication);
+        publicKeyArgs.setPublicKey("cdecde234234");
+        ResponseData<Integer> resp2 = weIdService
+            .delegateAddPublicKey(publicKeyArgs, weIdAuthentication);
         weIdDoc = weIdService.getWeIdDocument(createWeIdResult.getWeId());
         Assert.assertEquals(weIdDoc.getResult().getPublicKey().size(), 3);
     }
@@ -205,27 +206,32 @@ public class TestGetWeIdDocument extends TestBaseService {
     @Test
     public void testGetWeIdDocument_setRemoveManyTimes() throws Exception {
         String key1 = TestBaseUtil.createEcKeyPair().getPublicKey();
-        super.setPublicKey(createWeIdForGetDoc, key1, createWeIdNew.getWeId());
+        SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdForGetDoc);
+        setPublicKeyArgs.setPublicKey(key1);
+        setPublicKeyArgs.setOwner(createWeIdForGetDoc.getWeId());
+        setPublicKeyArgs.setWeId(createWeIdForGetDoc.getWeId());
+        ResponseData<Integer> key1Resp = weIdService.addPublicKey(setPublicKeyArgs);
+
         PasswordKey pwKey2 = TestBaseUtil.createEcKeyPair();
-        super.setAuthentication(createWeIdForGetDoc,
-            pwKey2.getPublicKey(),
-            createWeIdForGetDoc.getWeId());
+        SetAuthenticationArgs setAuthenticationArgs2 = new SetAuthenticationArgs();
+        setAuthenticationArgs2.setOwner(createWeIdForGetDoc.getWeId());
+        setAuthenticationArgs2.setPublicKey(pwKey2.getPublicKey());
+        setAuthenticationArgs2.setUserWeIdPrivateKey(createWeIdForGetDoc.getUserWeIdPrivateKey());
+        setAuthenticationArgs2.setWeId(createWeIdForGetDoc.getWeId());
+        ResponseData<Boolean> key2Resp = weIdService.setAuthentication(setAuthenticationArgs2);
         super.setService(createWeIdForGetDoc,
             "drivingCardServic1",
             "https://weidentity.webank.com/endpoint/8377465");
-        SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdForGetDoc);
         PasswordKey pwkey3 = TestBaseUtil.createEcKeyPair();
         setPublicKeyArgs.setPublicKey(pwkey3.getPublicKey());
-        // Set the owner to be the original guy
-        setPublicKeyArgs.setOwner(createWeIdForGetDoc.getWeId());
-        setPublicKeyArgs.setWeId(createWeIdForGetDoc.getWeId());
+        ResponseData<Integer> key3Resp = weIdService.addPublicKey(setPublicKeyArgs);
 
         // test cycle 1: remove + add + remove
         ResponseData<Boolean> res1 = weIdService
-            .removePublicKeyWithAuthentication(setPublicKeyArgs);
-        ResponseData<Boolean> res2 = weIdService.setPublicKey(setPublicKeyArgs);
+            .revokePublicKeyWithAuthentication(setPublicKeyArgs);
+        ResponseData<Integer> res2 = weIdService.addPublicKey(setPublicKeyArgs);
         ResponseData<Boolean> res3 = weIdService
-            .removePublicKeyWithAuthentication(setPublicKeyArgs);
+            .revokePublicKeyWithAuthentication(setPublicKeyArgs);
         ResponseData<WeIdDocument> weIdDoc =
             weIdService.getWeIdDocument(createWeIdForGetDoc.getWeId());
         LogUtil.info(logger, "getWeIdDocument", weIdDoc);
@@ -242,7 +248,7 @@ public class TestGetWeIdDocument extends TestBaseService {
         // remove the pre-created authentication
         setPublicKeyArgs.setPublicKey(pwKey2.getPublicKey());
         ResponseData<Boolean> res4 = weIdService
-            .removePublicKeyWithAuthentication(setPublicKeyArgs);
+            .revokePublicKeyWithAuthentication(setPublicKeyArgs);
 
         ResponseData<WeIdDocument> weIdDoc2 = weIdService
             .getWeIdDocument(createWeIdForGetDoc.getWeId());
@@ -257,7 +263,7 @@ public class TestGetWeIdDocument extends TestBaseService {
         CreateWeIdDataResult tempWdr = super.createWeIdWithSetAttr();
         setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(tempWdr);
         ResponseData<Boolean> result = weIdService
-            .removePublicKeyWithAuthentication(setPublicKeyArgs);
+            .revokePublicKeyWithAuthentication(setPublicKeyArgs);
         Assert.assertFalse(result.getResult());
         Assert.assertEquals(result.getErrorCode().intValue(),
             ErrorCode.WEID_CANNOT_REMOVE_ITS_OWN_PUB_KEY_WITHOUT_BACKUP.getCode());
@@ -274,7 +280,7 @@ public class TestGetWeIdDocument extends TestBaseService {
             .setPublicKey(createWeIdForGetDoc.getUserWeIdPublicKey().getPublicKey());
         setAuthenticationArgs.setUserWeIdPrivateKey(createWeIdForGetDoc.getUserWeIdPrivateKey());
         setAuthenticationArgs.setWeId(createWeIdForGetDoc.getWeId());
-        ResponseData<Boolean> res5 = weIdService.removeAuthentication(setAuthenticationArgs);
+        ResponseData<Boolean> res5 = weIdService.revokeAuthentication(setAuthenticationArgs);
         weIdDoc2 = weIdService
             .getWeIdDocument(createWeIdForGetDoc.getWeId());
         System.out.println("4" + new ObjectMapper()

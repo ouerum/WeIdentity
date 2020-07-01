@@ -34,7 +34,7 @@ import com.webank.weid.protocol.response.CreateWeIdDataResult;
 import com.webank.weid.protocol.response.ResponseData;
 
 /**
- * setPublicKey method for testing WeIdService.
+ * addPublicKey method for testing WeIdService.
  *
  * @author v_wbgyang
  */
@@ -49,11 +49,12 @@ public class TestSetPublicKey extends TestBaseService {
     public void testSetPublicKey_oneAuthPubKeySuccess() {
 
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        setPublicKeyArgs.setPublicKey(TestBaseUtil.createEcKeyPair().getPublicKey());
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(true, response.getResult());
+        Assert.assertNotEquals(0, response.getResult().intValue());
     }
 
     /**
@@ -65,11 +66,11 @@ public class TestSetPublicKey extends TestBaseService {
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         setPublicKeyArgs.setWeId(null);
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_INVALID.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());
     }
 
     /**
@@ -81,11 +82,11 @@ public class TestSetPublicKey extends TestBaseService {
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         setPublicKeyArgs.setWeId("di:weid:0xbbd97a63365b6c9fb6b011a8d294307a3b7dac73");
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_INVALID.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -97,12 +98,12 @@ public class TestSetPublicKey extends TestBaseService {
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         setPublicKeyArgs.setWeId("did:weid:0aaaaaaaaaaaa");
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
-        Assert.assertEquals(ErrorCode.WEID_DOES_NOT_EXIST.getCode(),
+        Assert.assertEquals(ErrorCode.CREDENTIAL_WEID_DOCUMENT_ILLEGAL.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -117,11 +118,11 @@ public class TestSetPublicKey extends TestBaseService {
 
         setPublicKeyArgs.setPublicKey(passwordKey.getPublicKey());
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(true, response.getResult());
+        Assert.assertNotEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -133,11 +134,11 @@ public class TestSetPublicKey extends TestBaseService {
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         setPublicKeyArgs.setPublicKey(null);
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.ILLEGAL_INPUT.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -150,11 +151,11 @@ public class TestSetPublicKey extends TestBaseService {
             TestBaseUtil.buildSetPublicKeyArgs(createWeIdResultWithSetAttr);
         setPublicKeyArgs.setPublicKey(" ");
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.ILLEGAL_INPUT.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
 
     }
 
@@ -169,11 +170,11 @@ public class TestSetPublicKey extends TestBaseService {
             TestBaseUtil.buildSetPublicKeyArgs(weId);
         setPublicKeyArgs.setPublicKey(" a!~@#$%^&*(123456789asfs ");
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(true, response.getResult());
+        Assert.assertNotEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -185,11 +186,11 @@ public class TestSetPublicKey extends TestBaseService {
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         setPublicKeyArgs.setUserWeIdPrivateKey(null);
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.ILLEGAL_INPUT.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -201,12 +202,12 @@ public class TestSetPublicKey extends TestBaseService {
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         setPublicKeyArgs.getUserWeIdPrivateKey().setPrivateKey(null);
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_INVALID.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -217,12 +218,12 @@ public class TestSetPublicKey extends TestBaseService {
 
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         setPublicKeyArgs.getUserWeIdPrivateKey().setPrivateKey("xxxxxxxxxxxxxxxxxxx");
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_INVALID.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -233,14 +234,15 @@ public class TestSetPublicKey extends TestBaseService {
 
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         PasswordKey passwordKey = TestBaseUtil.createEcKeyPair();
+        setPublicKeyArgs.setPublicKey(passwordKey.getPublicKey());
         setPublicKeyArgs.getUserWeIdPrivateKey().setPrivateKey(passwordKey.getPrivateKey());
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_DOES_NOT_MATCH.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -250,14 +252,15 @@ public class TestSetPublicKey extends TestBaseService {
     public void testSetPublicKeyCase13() {
 
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
+        setPublicKeyArgs.setPublicKey(TestBaseUtil.createEcKeyPair().getPublicKey());
         setPublicKeyArgs.setUserWeIdPrivateKey(createWeIdNew.getUserWeIdPrivateKey());
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_DOES_NOT_MATCH.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -269,12 +272,12 @@ public class TestSetPublicKey extends TestBaseService {
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         setPublicKeyArgs.setWeId(createWeIdNew.getWeId());
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_DOES_NOT_MATCH.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -284,13 +287,14 @@ public class TestSetPublicKey extends TestBaseService {
     public void testSetPublicKey_ownerIsWeId() {
 
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
+        setPublicKeyArgs.setPublicKey(TestBaseUtil.createEcKeyPair().getPublicKey());
         setPublicKeyArgs.setOwner(setPublicKeyArgs.getWeId());
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(true, response.getResult());
+        Assert.assertNotEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -300,13 +304,14 @@ public class TestSetPublicKey extends TestBaseService {
     public void testSetPublicKey_ownerIsOtherWeId() {
 
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
+        setPublicKeyArgs.setPublicKey(TestBaseUtil.createEcKeyPair().getPublicKey());
         setPublicKeyArgs.setOwner(createWeIdNew.getWeId());
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(true, response.getResult());
+        Assert.assertNotEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -318,11 +323,11 @@ public class TestSetPublicKey extends TestBaseService {
         SetPublicKeyArgs setPublicKeyArgs = TestBaseUtil.buildSetPublicKeyArgs(createWeIdResult);
         setPublicKeyArgs.setOwner("xxxxxxxxxxxxxxxxx");
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_INVALID.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -333,13 +338,14 @@ public class TestSetPublicKey extends TestBaseService {
 
         SetPublicKeyArgs setPublicKeyArgs =
             TestBaseUtil.buildSetPublicKeyArgs(super.createWeId());
+        setPublicKeyArgs.setPublicKey(TestBaseUtil.createEcKeyPair().getPublicKey());
         setPublicKeyArgs.setOwner(null);
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(true, response.getResult());
+        Assert.assertNotEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -355,11 +361,11 @@ public class TestSetPublicKey extends TestBaseService {
         }
         String owner = String.valueOf(chars);
         setPublicKeyArgs.setOwner(owner);
-        ResponseData<Boolean> response = weIdService.setPublicKey(setPublicKeyArgs);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(setPublicKeyArgs);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_INVALID.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 
     /**
@@ -368,10 +374,10 @@ public class TestSetPublicKey extends TestBaseService {
     @Test
     public void testSetPublicKeyCase21() {
 
-        ResponseData<Boolean> response = weIdService.setPublicKey(null);
-        LogUtil.info(logger, "setPublicKey", response);
+        ResponseData<Integer> response = weIdService.addPublicKey(null);
+        LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.ILLEGAL_INPUT.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(false, response.getResult());
+        Assert.assertEquals(0, response.getResult().intValue());;
     }
 }

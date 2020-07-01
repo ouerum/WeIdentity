@@ -77,6 +77,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.reinert.jjschema.v1.JsonSchemaV4Factory;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.bcos.web3j.abi.datatypes.Address;
 import org.bcos.web3j.abi.datatypes.DynamicArray;
 import org.bcos.web3j.abi.datatypes.DynamicBytes;
@@ -839,12 +840,14 @@ public final class DataToolUtils {
      * @param rawData the rawData to be verified
      * @param signature the Signature Data in secp256k1 style
      * @param weIdDocument the WeIdDocument to be extracted
+     * @param weIdPublicKeyId the WeID public key ID
      * @return true if yes, false otherwise with exact error codes
      */
     public static ErrorCode verifySecp256k1SignatureFromWeId(
         String rawData,
         String signature,
-        WeIdDocument weIdDocument) {
+        WeIdDocument weIdDocument,
+        String weIdPublicKeyId) {
         List<String> publicKeysListToVerify = new ArrayList<String>();
 
         try {
@@ -856,21 +859,38 @@ public final class DataToolUtils {
         // Traverse public key list indexed Authentication key list
         for (AuthenticationProperty authenticationProperty : weIdDocument
             .getAuthentication()) {
+            if (authenticationProperty.getRevoked()) {
+                continue;
+            }
             String index = authenticationProperty.getPublicKey();
             for (PublicKeyProperty publicKeyProperty : weIdDocument.getPublicKey()) {
                 if (publicKeyProperty.getId().equalsIgnoreCase(index)) {
+                    if (publicKeyProperty.getRevoked()) {
+                        continue;
+                    }
                     publicKeysListToVerify.add(publicKeyProperty.getPublicKey());
                 }
             }
         }
+        String foundMatchingPubKeyId = StringUtils.EMPTY;
         try {
             boolean result = false;
             for (String publicKeyItem : publicKeysListToVerify) {
                 if (StringUtils.isNotEmpty(publicKeyItem)) {
-                    result =
-                        result
-                            || verifySecp256k1Signature(
-                            rawData, signature, new BigInteger(publicKeyItem));
+                    boolean currentResult = verifySecp256k1Signature(
+                        rawData, signature, new BigInteger(publicKeyItem));
+                    result = currentResult || result;
+                    if (currentResult) {
+                        for (PublicKeyProperty pkp : weIdDocument.getPublicKey()) {
+                            if (pkp.getRevoked()) {
+                                continue;
+                            }
+                            if (pkp.getPublicKey().equalsIgnoreCase(publicKeyItem)) {
+                                foundMatchingPubKeyId = pkp.getId();
+                            }
+                        }
+                        break;
+                    }
                 }
             }
             if (!result) {
@@ -879,6 +899,13 @@ public final class DataToolUtils {
         } catch (Exception e) {
             logger.error("some exceptions occurred in signature verification", e);
             return ErrorCode.CREDENTIAL_EXCEPTION_VERIFYSIGNATURE;
+        }
+        if (NumberUtils.isDigits(weIdPublicKeyId)) {
+            weIdPublicKeyId = weIdDocument.getId() + "#keys-" + Integer.valueOf(weIdPublicKeyId);
+        }
+        if (!StringUtils.isEmpty(weIdPublicKeyId)
+            && !foundMatchingPubKeyId.equalsIgnoreCase(weIdPublicKeyId)) {
+            return ErrorCode.CREDENTIAL_VERIFY_SUCCEEDED_WITH_WRONG_PUBLIC_KEY_ID;
         }
         return ErrorCode.SUCCESS;
     }
@@ -892,12 +919,14 @@ public final class DataToolUtils {
      * @param rawData the rawData to be verified
      * @param signature the Signature Data
      * @param weIdDocument the WeIdDocument to be extracted
+     * @param weIdPublicKeyId the WeID public key ID
      * @return true if yes, false otherwise with exact error codes
      */
     public static ErrorCode verifySignatureFromWeId(
         String rawData,
         String signature,
-        WeIdDocument weIdDocument) {
+        WeIdDocument weIdDocument,
+        String weIdPublicKeyId) {
         Sign.SignatureData signatureData = null;
         try {
             signatureData = convertBase64StringToSignatureData(signature);
@@ -905,7 +934,7 @@ public final class DataToolUtils {
             logger.error("verify Signature failed.", e);
             return ErrorCode.CREDENTIAL_SIGNATURE_BROKEN;
         }
-        return verifySignatureFromWeId(rawData, signatureData, weIdDocument);
+        return verifySignatureFromWeId(rawData, signatureData, weIdDocument, weIdPublicKeyId);
     }
 
     /**
@@ -917,32 +946,51 @@ public final class DataToolUtils {
      * @param rawData the rawData to be verified
      * @param signatureData the Signature Data structure
      * @param weIdDocument the WeIdDocument to be extracted
+     * @param weIdPublicKeyId the WeID public key ID
      * @return true if yes, false otherwise with exact error codes
      */
     public static ErrorCode verifySignatureFromWeId(
         String rawData,
         Sign.SignatureData signatureData,
-        WeIdDocument weIdDocument) {
+        WeIdDocument weIdDocument,
+        String weIdPublicKeyId) {
         List<String> publicKeysListToVerify = new ArrayList<String>();
 
         // Traverse public key list indexed Authentication key list
         for (AuthenticationProperty authenticationProperty : weIdDocument
             .getAuthentication()) {
+            if (authenticationProperty.getRevoked()) {
+                continue;
+            }
             String index = authenticationProperty.getPublicKey();
             for (PublicKeyProperty publicKeyProperty : weIdDocument.getPublicKey()) {
+                if (publicKeyProperty.getRevoked()) {
+                    continue;
+                }
                 if (publicKeyProperty.getId().equalsIgnoreCase(index)) {
                     publicKeysListToVerify.add(publicKeyProperty.getPublicKey());
                 }
             }
         }
+        String foundMatchingPubKeyId = StringUtils.EMPTY;
         try {
             boolean result = false;
             for (String publicKeyItem : publicKeysListToVerify) {
                 if (StringUtils.isNotEmpty(publicKeyItem)) {
-                    result =
-                        result
-                            || verifySignature(
-                            rawData, signatureData, new BigInteger(publicKeyItem));
+                    boolean currentResult = verifySignature(
+                        rawData, signatureData, new BigInteger(publicKeyItem));
+                    result = result || currentResult;
+                    if (currentResult) {
+                        for (PublicKeyProperty pkp : weIdDocument.getPublicKey()) {
+                            if (pkp.getRevoked()) {
+                                continue;
+                            }
+                            if (pkp.getPublicKey().equalsIgnoreCase(publicKeyItem)) {
+                                foundMatchingPubKeyId = pkp.getId();
+                            }
+                        }
+                        break;
+                    }
                 }
             }
             if (!result) {
@@ -951,6 +999,13 @@ public final class DataToolUtils {
         } catch (SignatureException e) {
             logger.error("some exceptions occurred in signature verification", e);
             return ErrorCode.CREDENTIAL_EXCEPTION_VERIFYSIGNATURE;
+        }
+        if (NumberUtils.isDigits(weIdPublicKeyId)) {
+            weIdPublicKeyId = weIdDocument.getId() + "#keys-" + Integer.valueOf(weIdPublicKeyId);
+        }
+        if (!StringUtils.isEmpty(weIdPublicKeyId)
+            && !foundMatchingPubKeyId.equalsIgnoreCase(weIdPublicKeyId)) {
+            return ErrorCode.CREDENTIAL_VERIFY_SUCCEEDED_WITH_WRONG_PUBLIC_KEY_ID;
         }
         return ErrorCode.SUCCESS;
     }

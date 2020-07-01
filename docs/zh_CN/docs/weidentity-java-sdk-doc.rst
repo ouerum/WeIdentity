@@ -1922,7 +1922,7 @@ com.webank.weid.protocol.base.ServiceProperty
 
 .. code-block:: text
 
-   接口名称:com.webank.weid.rpc.WeIdService.setPublicKey
+   接口名称:addPublicKey
    接口定义:ResponseData<Boolean> setPublicKey(SetPublicKeyArgs setPublicKeyArgs)
    接口描述: 根据WeIdentity DID添加公钥。
 
@@ -2118,7 +2118,7 @@ com.webank.weid.protocol.response.TransactionInfo
 
 .. code-block:: text
 
-   接口名称:com.webank.weid.rpc.WeIdService.delegateSetPublicKey
+   接口名称:delegateAddPublicKey
    接口定义:ResponseData<Boolean> setPublicKey(PublicKeyArgs publicKeyArgs, WeIdAuthentication delegateAuth)
    接口描述: 由代理来给WeIdentity DID添加公钥。
 

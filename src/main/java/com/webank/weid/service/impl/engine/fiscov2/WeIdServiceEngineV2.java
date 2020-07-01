@@ -30,7 +30,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.abi.EventEncoder;
@@ -62,7 +61,6 @@ import com.webank.weid.protocol.response.ResponseData;
 import com.webank.weid.protocol.response.TransactionInfo;
 import com.webank.weid.service.impl.engine.BaseEngine;
 import com.webank.weid.service.impl.engine.WeIdServiceEngine;
-import com.webank.weid.suite.auth.inf.WeIdAuth;
 import com.webank.weid.util.DataToolUtils;
 import com.webank.weid.util.DateUtils;
 import com.webank.weid.util.WeIdUtils;
@@ -359,7 +357,7 @@ public class WeIdServiceEngineV2 extends BaseEngine implements WeIdServiceEngine
         } else if (StringUtils.startsWith(key, WeIdConstant.WEID_DOC_SERVICE_PREFIX)) {
             constructWeIdService(key, value, weId, result);
         } else {
-            constructWeIdAttributeDefault(key, value, weId, result);
+            constructDefaultWeIdAttribute(key, value, weId, result);
         }
     }
 
@@ -501,12 +499,12 @@ public class WeIdServiceEngineV2 extends BaseEngine implements WeIdServiceEngine
         result.getService().add(serviceResult);
     }
 
-    private static void constructWeIdAttributeDefault(
+    private static void constructDefaultWeIdAttribute(
         String key, String value, String weId, WeIdDocument result) {
 
         logger.info("method buildWeIdAttributeDefault() parameter::key{}, value:{}, weId:{}, "
             + "result:{}", key, value, weId, result);
-        switch (key) {
+        switch (key.trim()) {
             case WeIdConstant.WEID_DOC_CREATED:
                 result.setCreated(Long.valueOf(value));
                 break;

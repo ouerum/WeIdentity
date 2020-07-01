@@ -84,21 +84,23 @@ public interface WeIdService {
     ResponseData<WeIdDocument> getWeIdDocument(String weId);
 
     /**
-     * Set public key in the WeIdentity DID Document.
+     * Add a public key in the WeIdentity DID Document. If this key is already revoked, then it
+     * will be un-revoked.
      *
      * @param setPublicKeyArgs the set public key args
-     * @return true if the "set" operation succeeds, false otherwise.
+     * @return the public key ID, 0 if any error occurred
      */
-    ResponseData<Boolean> setPublicKey(SetPublicKeyArgs setPublicKeyArgs);
+    ResponseData<Integer> addPublicKey(SetPublicKeyArgs setPublicKeyArgs);
 
     /**
-     * Set public key in the WeIdentity DID Document.
+     * Add a public key in the WeIdentity DID Document by other delegate caller (currently it must
+     * be admin / committee). If this key is already revoked, then it will be un-revoked.
      *
      * @param publicKeyArgs the set public key args
      * @param delegateAuth the delegate's auth
-     * @return true if the "set" operation succeeds, false otherwise.
+     * @return the public key ID, 0 if any error occurred
      */
-    ResponseData<Boolean> delegateSetPublicKey(
+    ResponseData<Integer> delegateAddPublicKey(
         PublicKeyArgs publicKeyArgs,
         WeIdAuthentication delegateAuth
     );
@@ -157,7 +159,7 @@ public interface WeIdService {
      * @param setPublicKeyArgs the to-be-deleted publicKey
      * @return true if succeeds, false otherwise
      */
-    ResponseData<Boolean> removePublicKeyWithAuthentication(SetPublicKeyArgs setPublicKeyArgs);
+    ResponseData<Boolean> revokePublicKeyWithAuthentication(SetPublicKeyArgs setPublicKeyArgs);
 
     /**
      * Remove an authentication tag in WeID document only - will not affect its public key.
@@ -165,5 +167,5 @@ public interface WeIdService {
      * @param setAuthenticationArgs the to-be-deleted publicKey
      * @return true if succeeds, false otherwise
      */
-    ResponseData<Boolean> removeAuthentication(SetAuthenticationArgs setAuthenticationArgs);
+    ResponseData<Boolean> revokeAuthentication(SetAuthenticationArgs setAuthenticationArgs);
 }

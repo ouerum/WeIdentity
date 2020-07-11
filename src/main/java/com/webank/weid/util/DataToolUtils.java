@@ -105,7 +105,6 @@ import com.webank.weid.constant.JsonSchemaConstant;
 import com.webank.weid.constant.WeIdConstant;
 import com.webank.weid.exception.DataTypeCastException;
 import com.webank.weid.exception.WeIdBaseException;
-import com.webank.weid.protocol.base.AuthenticationProperty;
 import com.webank.weid.protocol.base.PublicKeyProperty;
 import com.webank.weid.protocol.base.WeIdDocument;
 import com.webank.weid.protocol.response.RsvSignature;
@@ -857,20 +856,12 @@ public final class DataToolUtils {
         }
 
         // Traverse public key list indexed Authentication key list
-        for (AuthenticationProperty authenticationProperty : weIdDocument
-            .getAuthentication()) {
-            if (authenticationProperty.getRevoked()) {
+
+        for (PublicKeyProperty publicKeyProperty : weIdDocument.getPublicKey()) {
+            if (publicKeyProperty.getRevoked()) {
                 continue;
             }
-            String index = authenticationProperty.getPublicKey();
-            for (PublicKeyProperty publicKeyProperty : weIdDocument.getPublicKey()) {
-                if (publicKeyProperty.getId().equalsIgnoreCase(index)) {
-                    if (publicKeyProperty.getRevoked()) {
-                        continue;
-                    }
-                    publicKeysListToVerify.add(publicKeyProperty.getPublicKey());
-                }
-            }
+            publicKeysListToVerify.add(publicKeyProperty.getPublicKey());
         }
         String foundMatchingPubKeyId = StringUtils.EMPTY;
         try {
@@ -957,20 +948,11 @@ public final class DataToolUtils {
         List<String> publicKeysListToVerify = new ArrayList<String>();
 
         // Traverse public key list indexed Authentication key list
-        for (AuthenticationProperty authenticationProperty : weIdDocument
-            .getAuthentication()) {
-            if (authenticationProperty.getRevoked()) {
+        for (PublicKeyProperty publicKeyProperty : weIdDocument.getPublicKey()) {
+            if (publicKeyProperty.getRevoked()) {
                 continue;
             }
-            String index = authenticationProperty.getPublicKey();
-            for (PublicKeyProperty publicKeyProperty : weIdDocument.getPublicKey()) {
-                if (publicKeyProperty.getRevoked()) {
-                    continue;
-                }
-                if (publicKeyProperty.getId().equalsIgnoreCase(index)) {
-                    publicKeysListToVerify.add(publicKeyProperty.getPublicKey());
-                }
-            }
+            publicKeysListToVerify.add(publicKeyProperty.getPublicKey());
         }
         String foundMatchingPubKeyId = StringUtils.EMPTY;
         try {

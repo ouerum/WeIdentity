@@ -382,7 +382,8 @@ public class WeIdServiceEngineV2 extends BaseEngine implements WeIdServiceEngine
         // this pubkey, simply override the tag and return.
         Boolean isRevoked = value.contains(WeIdConstant.REMOVED_PUBKEY_TAG);
         String trimmedPubKey = StringUtils
-            .splitByWholeSeparator(value.replace(WeIdConstant.REMOVED_PUBKEY_TAG, ""), "/")[0];
+            .splitByWholeSeparator(value.replace(WeIdConstant.REMOVED_PUBKEY_TAG, ""),
+                WeIdConstant.SEPARATOR)[0];
         for (PublicKeyProperty pr : pubkeyList) {
             if (pr.getPublicKey().contains(trimmedPubKey)) {
                 // update status: revocation
@@ -390,7 +391,8 @@ public class WeIdServiceEngineV2 extends BaseEngine implements WeIdServiceEngine
                     pr.setRevoked(isRevoked);
                 }
                 // update owner
-                String[] publicKeyData = StringUtils.splitByWholeSeparator(value, "/");
+                String[] publicKeyData = StringUtils
+                    .splitByWholeSeparator(value, WeIdConstant.SEPARATOR);
                 String weAddress = publicKeyData[1];
                 String owner = WeIdUtils.convertAddressToWeId(weAddress);
                 pr.setOwner(owner);
@@ -414,7 +416,7 @@ public class WeIdServiceEngineV2 extends BaseEngine implements WeIdServiceEngine
                 .append(result.getPublicKey().size())
                 .toString()
         );
-        String[] publicKeyData = StringUtils.splitByWholeSeparator(value, "/");
+        String[] publicKeyData = StringUtils.splitByWholeSeparator(value, WeIdConstant.SEPARATOR);
         if (publicKeyData != null && publicKeyData.length == 2) {
             pubKey.setPublicKey(publicKeyData[0]);
             String weAddress = publicKeyData[1];

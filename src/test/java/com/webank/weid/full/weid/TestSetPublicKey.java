@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.webank.weid.common.LogUtil;
 import com.webank.weid.common.PasswordKey;
 import com.webank.weid.constant.ErrorCode;
+import com.webank.weid.constant.WeIdConstant;
 import com.webank.weid.full.TestBaseService;
 import com.webank.weid.full.TestBaseUtil;
 import com.webank.weid.protocol.request.SetPublicKeyArgs;
@@ -54,7 +55,8 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertNotEquals(0, response.getResult().intValue());
+        Assert.assertNotEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
     }
 
     /**
@@ -70,7 +72,8 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_INVALID.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
     }
 
     /**
@@ -86,7 +89,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_INVALID.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -103,12 +108,13 @@ public class TestSetPublicKey extends TestBaseService {
 
         Assert.assertEquals(ErrorCode.CREDENTIAL_WEID_DOCUMENT_ILLEGAL.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
      * case: publicKey is a new key.
-     *
      */
     @Test
     public void testSetPublicKey_newKey() {
@@ -122,7 +128,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertNotEquals(0, response.getResult().intValue());;
+        Assert.assertNotEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -138,7 +146,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.ILLEGAL_INPUT.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -155,7 +165,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.ILLEGAL_INPUT.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
 
     }
 
@@ -174,7 +186,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertNotEquals(0, response.getResult().intValue());;
+        Assert.assertNotEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -190,7 +204,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.ILLEGAL_INPUT.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -207,7 +223,9 @@ public class TestSetPublicKey extends TestBaseService {
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_INVALID.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -223,7 +241,9 @@ public class TestSetPublicKey extends TestBaseService {
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_INVALID.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -242,7 +262,9 @@ public class TestSetPublicKey extends TestBaseService {
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_DOES_NOT_MATCH.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -260,7 +282,9 @@ public class TestSetPublicKey extends TestBaseService {
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_DOES_NOT_MATCH.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -277,7 +301,9 @@ public class TestSetPublicKey extends TestBaseService {
 
         Assert.assertEquals(ErrorCode.WEID_PRIVATEKEY_DOES_NOT_MATCH.getCode(),
             response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -294,7 +320,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertNotEquals(0, response.getResult().intValue());;
+        Assert.assertNotEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -311,7 +339,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertNotEquals(0, response.getResult().intValue());;
+        Assert.assertNotEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -327,7 +357,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_INVALID.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -345,7 +377,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), response.getErrorCode().intValue());
-        Assert.assertNotEquals(0, response.getResult().intValue());;
+        Assert.assertNotEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -365,7 +399,9 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.WEID_INVALID.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 
     /**
@@ -378,6 +414,8 @@ public class TestSetPublicKey extends TestBaseService {
         LogUtil.info(logger, "addPublicKey", response);
 
         Assert.assertEquals(ErrorCode.ILLEGAL_INPUT.getCode(), response.getErrorCode().intValue());
-        Assert.assertEquals(0, response.getResult().intValue());;
+        Assert.assertEquals(WeIdConstant.ADD_PUBKEY_FAILURE_CODE.intValue(),
+            response.getResult().intValue());
+        ;
     }
 }

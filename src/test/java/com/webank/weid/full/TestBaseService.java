@@ -39,11 +39,13 @@ import com.webank.weid.protocol.base.CredentialWrapper;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
 import com.webank.weid.protocol.base.WeIdPublicKey;
+import com.webank.weid.protocol.request.AuthenticationArgs;
 import com.webank.weid.protocol.request.CptMapArgs;
 import com.webank.weid.protocol.request.CreateCredentialArgs;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.request.CreateWeIdArgs;
 import com.webank.weid.protocol.request.RegisterAuthorityIssuerArgs;
+import com.webank.weid.protocol.request.ServiceArgs;
 import com.webank.weid.protocol.request.SetAuthenticationArgs;
 import com.webank.weid.protocol.request.SetServiceArgs;
 import com.webank.weid.protocol.response.CreateWeIdDataResult;
@@ -676,11 +678,12 @@ public abstract class TestBaseService extends BaseTest {
         String serviceEnpoint) {
 
         // setService for this WeIdentity DID
-        SetServiceArgs setServiceArgs = TestBaseUtil.buildSetServiceArgs(createResult);
+        ServiceArgs setServiceArgs = TestBaseUtil.buildSetServiceArgs(createResult);
         setServiceArgs.setType(serviceType);
         setServiceArgs.setServiceEndpoint(serviceEnpoint);
 
-        ResponseData<Boolean> responseSetSer = weIdService.setService(setServiceArgs);
+        ResponseData<Boolean> responseSetSer = weIdService.setService(createResult.getWeId(),
+            setServiceArgs, createResult.getUserWeIdPrivateKey().getPrivateKey());
         LogUtil.info(logger, "setService", responseSetSer);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), responseSetSer.getErrorCode().intValue());
@@ -700,12 +703,13 @@ public abstract class TestBaseService extends BaseTest {
         String owner) {
 
         // setAuthenticate for this WeIdentity DID
-        SetAuthenticationArgs setAuthenticationArgs =
+        AuthenticationArgs setAuthenticationArgs =
             TestBaseUtil.buildSetAuthenticationArgs(createResult);
         setAuthenticationArgs.setOwner(owner);
         setAuthenticationArgs.setPublicKey(publicKey);
         ResponseData<Boolean> responseSetAuth =
-            weIdService.setAuthentication(setAuthenticationArgs);
+            weIdService.setAuthentication(createResult.getWeId(), setAuthenticationArgs,
+                createResult.getUserWeIdPrivateKey().getPrivateKey());
         LogUtil.info(logger, "setAuthentication", responseSetAuth);
 
         Assert.assertEquals(ErrorCode.SUCCESS.getCode(), responseSetAuth.getErrorCode().intValue());

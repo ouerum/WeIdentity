@@ -46,6 +46,7 @@ import com.webank.weid.protocol.base.CredentialPojo;
 import com.webank.weid.protocol.base.WeIdAuthentication;
 import com.webank.weid.protocol.base.WeIdPrivateKey;
 import com.webank.weid.protocol.cpt.Cpt101;
+import com.webank.weid.protocol.request.AuthenticationArgs;
 import com.webank.weid.protocol.request.CptStringArgs;
 import com.webank.weid.protocol.request.CreateCredentialPojoArgs;
 import com.webank.weid.protocol.request.CreateWeIdArgs;
@@ -110,12 +111,11 @@ public class TestCreateCredentialPojo extends TestBaseService {
 
         // Add new public key to this guy
         PasswordKey pwKey = TestBaseUtil.createEcKeyPair();
-        SetAuthenticationArgs arg = new SetAuthenticationArgs();
+        AuthenticationArgs arg = new AuthenticationArgs();
         arg.setOwner(cwdr.getWeId());
-        arg.setWeId(cwdr.getWeId());
         arg.setPublicKey(pwKey.getPublicKey());
-        arg.setUserWeIdPrivateKey(cwdr.getUserWeIdPrivateKey());
-        ResponseData<Boolean> addResp = weIdService.setAuthentication(arg);
+        ResponseData<Boolean> addResp = weIdService.setAuthentication(cwdr.getWeId(),
+            arg, cwdr.getUserWeIdPrivateKey().getPrivateKey());
         System.out.println(weIdService.getWeIdDocumentJson(cwdr.getWeId()));
 
         // Using the new private key to sign credential
